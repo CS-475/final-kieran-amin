@@ -1,0 +1,55 @@
+# set up the shader or blending logic
+`IF colors AND textures are provided:
+    shader = CreateShaderForColorAndTexture(colors, texs);
+`ELSE IF textures are provided:
+    shader = UseTextureShader(paint);
+ELSE IF colors are provided:
+    shader = CreateShaderForColors(colors);
+
+#create a local paint object and attach the shader 
+localPaint = copyOf(paint)
+IF shader is not null:
+    localPaint.setShader(shader);
+
+#render the triangle using the local paint object
+drawConvexPolygon([vertex1, vertex2, vertex3], 3, localPaint);
+
+
+More psuedocode:
+
+void drawMesh(GPoint verts[], GColor colors[], GPoint texs[], int count, int indices[], GPaint& starterPaint) {
+    GPaint p = starterPaint;
+    std::shared_ptr<GShader> shader;
+
+for (int i = 0; i < count; ++i){
+    int index0 = indices[3*i + 0];
+    int index1 = indices[3*i + 1];
+    int index2 = indices[3*i + 2];
+
+    if(colors != nullptr && texs == nullptr) {
+        shader = make_tri_color( verts[index0], verts[index1], verts[index2], colors[index0], colors[index1], colors[index2]);
+    }
+    else { ...}
+
+    GPoint poly[] = {verts[index0], verts[index1], verts[index2]};
+    p.setShader(shader);
+    drawConvexPolygon(poly, 3, p);
+}
+}
+
+
+createVoronoiShader()
+createSweepGradient
+createLinearPosGradient
+createColorMatrixShader
+strokePolygon
+drawQuadraticCoons
+
+stroking:
+    outline the outside of the polygon and the inside of the polygon
+    fill the space between the outside and inside
+    looks like a draw but is really a fill
+    connect the outlines and fill the space between them to draw the shape 
+    use the width to determine the size of the stroke
+    use the cap to determine the shape of the end points
+    use the join to determine the shape of the points on the inside of the polygon
